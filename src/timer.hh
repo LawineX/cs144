@@ -11,7 +11,7 @@ private:
   uint64_t RTO_ms{};
 public:
     timer_state() {};
-    void state_reset(uint64_t initial_RTO_ms){timer_ms=0; RTO_ms=initial_RTO_ms;};
+    void state_reset(uint64_t initial_RTO_ms){timer_running_state=true;timer_ms=0; RTO_ms=initial_RTO_ms;};
     void state_off(){timer_running_state = false;};
     void run_on(){timer_running_state=true;};
     bool is_running() const{return timer_running_state;};
