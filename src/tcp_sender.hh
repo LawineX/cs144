@@ -49,12 +49,11 @@ private:
   ByteStream input_;
   Wrap32 isn_;
   uint64_t initial_RTO_ms_;
-  uint16_t report_window_size {1};
+  uint16_t report_window_size { 1 };
   uint64_t abs_acked_num {};
   uint64_t abs_sender_num {};
   uint64_t sequence_numbers_in_flight_ {};
-  timer_state my_timer{};
+  timer_state my_timer {};
   std::queue<TCPSenderMessage> my_sender_queue {};
   bool FIN_ {};
-
 };

@@ -25,8 +25,9 @@ void TCPSender::push( const TransmitFunction& transmit )
   auto seqno = Wrap32::wrap( abs_sender_num, isn_ );
 
   // 限制从buffer中取出来的字节数
-  auto win
-    = report_window_size == 0 ? 1 : report_window_size - sequence_numbers_in_flight_ - static_cast<uint16_t>( seqno == isn_ );
+  auto win = report_window_size == 0
+               ? 1
+               : report_window_size - sequence_numbers_in_flight_ - static_cast<uint16_t>( seqno == isn_ );
 
   string out;
   while ( reader().bytes_buffered() and static_cast<uint16_t>( out.size() ) < win ) {
@@ -60,9 +61,9 @@ void TCPSender::push( const TransmitFunction& transmit )
     }
 
     transmit( message );
-    if(!my_timer.is_running() && message.sequence_length() ){
-      auto RTO=my_timer.get_current_RTO()?my_timer.get_current_RTO():initial_RTO_ms_;
-      my_timer.state_reset(RTO);
+    if ( !my_timer.is_running() && message.sequence_length() ) {
+      auto RTO = my_timer.get_current_RTO() ? my_timer.get_current_RTO() : initial_RTO_ms_;
+      my_timer.state_reset( RTO );
     }
     abs_sender_num += message.sequence_length();
     sequence_numbers_in_flight_ += message.sequence_length();
@@ -97,12 +98,13 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
   if ( abs_seq_k > abs_acked_num && abs_seq_k <= abs_sender_num ) {
     abs_acked_num = abs_seq_k;
 
-    my_timer.state_reset(initial_RTO_ms_);
+    my_timer.state_reset( initial_RTO_ms_ );
     my_timer.clear_count();
 
     uint64_t abs_seq = 0;
     while ( !my_sender_queue.empty() && abs_seq <= abs_seq_k ) {
-      abs_seq = my_sender_queue.front().seqno.unwrap( isn_, abs_acked_num ) + my_sender_queue.front().sequence_length();
+      abs_seq
+        = my_sender_queue.front().seqno.unwrap( isn_, abs_acked_num ) + my_sender_queue.front().sequence_length();
       if ( abs_seq <= abs_seq_k ) {
         sequence_numbers_in_flight_ -= my_sender_queue.front().sequence_length();
         my_sender_queue.pop();
@@ -114,16 +116,16 @@ void TCPSender::receive( const TCPReceiverMessage& msg )
 void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& transmit )
 {
   // timer stopped when queue is empty
-  if ( !my_sender_queue.empty() ) {  
-  // 如果在重传之前收到ack并且队列为空，则不需要重传了，此时timer相关信息已经清0
-    if ( my_timer.check_out_of_date(ms_since_last_tick) ) {
+  if ( !my_sender_queue.empty() ) {
+    // 如果在重传之前收到ack并且队列为空，则不需要重传了，此时timer相关信息已经清0
+    if ( my_timer.check_out_of_date( ms_since_last_tick ) ) {
       transmit( my_sender_queue.front() );
       if ( report_window_size > 0 ) {
-      my_timer.add_count();
-      my_timer.state_reset(2*my_timer.get_current_RTO());
-      return ;
+        my_timer.add_count();
+        my_timer.state_reset( 2 * my_timer.get_current_RTO() );
+        return;
       }
-    my_timer.state_reset(my_timer.get_current_RTO());
-    } 
+      my_timer.state_reset( my_timer.get_current_RTO() );
+    }
   }
 }
