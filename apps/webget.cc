@@ -4,6 +4,7 @@
 #include <iostream>
 #include <span>
 #include <string>
+#include "tcp_minnow_socket.hh"
 
 using namespace std;
 
@@ -11,7 +12,7 @@ void get_URL( const string& host, const string& path )
 {
   cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
   Address remote_address( host, "http" );
-  TCPSocket host_sockt;
+  CS144TCPSocket host_sockt;
   host_sockt.connect( remote_address );
   string http_request = "GET ";
   http_request.append( path )
