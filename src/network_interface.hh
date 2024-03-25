@@ -7,7 +7,6 @@
 #include "ipv4_datagram.hh"
 #include <unordered_map>
 
-
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
 
@@ -34,14 +33,11 @@ struct resend_struct
 {
   uint32_t ipv4 {};
   InternetDatagram dgram {};
-
-
 };
 
 class NetworkInterface
 {
 public:
-
   // An abstraction for the physical output port where the NetworkInterface sends Ethernet frames
   class OutputPort
   {
@@ -93,9 +89,6 @@ private:
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
   std::queue<resend_struct> unarp_queue {};
-  std::unordered_map<uint32_t,std::pair<EthernetAddress,size_t>> arp_hash_map {};
+  std::unordered_map<uint32_t, std::pair<EthernetAddress, size_t>> arp_hash_map {};
   size_t arp_cool_down = 0;
-
-  
-
 };
