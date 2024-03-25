@@ -5,6 +5,8 @@
 #include "address.hh"
 #include "ethernet_frame.hh"
 #include "ipv4_datagram.hh"
+#include <unordered_map>
+
 
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
@@ -27,9 +29,19 @@
 // the network interface passes it up the stack. If it's an ARP
 // request or reply, the network interface processes the frame
 // and learns or replies as necessary.
+
+struct resend_struct
+{
+  uint32_t ipv4 {};
+  InternetDatagram dgram {};
+
+
+};
+
 class NetworkInterface
 {
 public:
+
   // An abstraction for the physical output port where the NetworkInterface sends Ethernet frames
   class OutputPort
   {
@@ -78,7 +90,12 @@ private:
 
   // IP (known as internet-layer or network-layer) address of the interface
   Address ip_address_;
-
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+  std::queue<resend_struct> unarp_queue {};
+  std::unordered_map<uint32_t,std::pair<EthernetAddress,size_t>> arp_hash_map {};
+  size_t arp_cool_down = 0;
+
+  
+
 };
