@@ -43,5 +43,4 @@ private:
     size_t interface_num {};
   };
   std::vector<match_struct> match_vec {};
-  
 };
